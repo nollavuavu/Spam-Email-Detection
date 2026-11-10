@@ -42,15 +42,26 @@ preds3 = model3.predict(x_test_num)
 
 #Print result from 3 models
 
-#print(classification_report(y_test, preds1))
-#print(classification_report(y_test, preds2))
-#print(classification_report(y_test, preds3))
+#NB
+print(classification_report(y_test, preds1))
+print(confusion_matrix(y_test, preds1))
+wrong1 = x_test[preds1 != y_test]
+for text, true_label in zip(wrong1, y_test[preds1 != y_test]):
+    print(true_label, "|", text[:300])
+    print("----")
 
-#print(confusion_matrix(y_test, preds1))
-#print(confusion_matrix(y_test, preds2))
-#print(confusion_matrix(y_test, preds3))
+#LR
+print(classification_report(y_test, preds2))
+print(confusion_matrix(y_test, preds2))
+wrong2 = x_test[preds2 != y_test]
+for text, true_label in zip(wrong2, y_test[preds2 != y_test]):
+    print(true_label, "|", text[:300])
+    print("----")
 
-wrong = x_test[preds3 != y_test]
-for text, true_label in zip(wrong, y_test[preds3 != y_test]):
+#LinearSVC
+print(classification_report(y_test, preds3))
+print(confusion_matrix(y_test, preds3))
+wrong3 = x_test[preds3 != y_test]
+for text, true_label in zip(wrong3, y_test[preds3 != y_test]):
     print(true_label, "|", text[:300])
     print("----")
