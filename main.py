@@ -2,15 +2,55 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from sklearn. feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
+from sklearn.metrics import confusion_matrix
 
 spam_file_path = "emails.csv"
 df = pd.read_csv(spam_file_path)
-x = df["text"]
-y = df["spam"]
+x, y = df["text"], df["spam"]
 
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, stratify=y, random_state=42)
+#Split the dataframe to two parts(train = 80%, test=20%)
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, stratify=y, random_state=69)
 
-print(len(x_test))
+#Word Embeddings/NLP 
+vec = TfidfVectorizer()
+x_train_num = vec.fit_transform(x_train)
+x_test_num = vec.transform(x_test)
+
+#---Train---
+
+#Naive Bayes
+model1 = MultinomialNB()
+model1.fit(x_train_num, y_train)
+
+#Logistic Regression
+model2 = LogisticRegression()
+model2.fit(x_train_num, y_train)
+
+#LinearSVC
+model3 = LinearSVC(class_weight="balanced")
+model3.fit(x_train_num, y_train)
+
+#Predict
+preds1 = model1.predict(x_test_num)
+preds2 = model2.predict(x_test_num)
+preds3 = model3.predict(x_test_num)
+
+#Print result from 3 models
+
+#print(classification_report(y_test, preds1))
+#print(classification_report(y_test, preds2))
+#print(classification_report(y_test, preds3))
+
+#print(confusion_matrix(y_test, preds1))
+#print(confusion_matrix(y_test, preds2))
+#print(confusion_matrix(y_test, preds3))
+
+wrong = x_test[preds3 != y_test]
+for text, true_label in zip(wrong, y_test[preds3 != y_test]):
+    print(true_label, "|", text[:300])
+    print("----")
