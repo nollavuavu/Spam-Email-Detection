@@ -1,5 +1,3 @@
-I have decided my first AI/ML project to be spam detection.
-
 # Spam Detection: Naive Bayes vs Logistic Regression vs LinearSVC
 
 A small machine learning project that classifies emails as spam or ham (not spam) using scikit-learn. I trained three models on the same data and compared them.
