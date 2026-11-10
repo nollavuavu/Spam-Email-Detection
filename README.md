@@ -1,6 +1,6 @@
 # Spam Detection: Naive Bayes vs Logistic Regression vs LinearSVC
 
-A small machine learning project that classifies emails as spam or ham (not spam) using scikit-learn. I trained three models on the same data and compared them.
+A small machine learning project that classifies emails as spam or ham (not spam) using scikit-learn. I trained three models on the same data and compared them. The best one scores 99% on the dataset's test set, but flags 62% of my own real inbox as spam, so most of this project is about why that happens.
 
 ## Dataset
 
@@ -52,16 +52,37 @@ I read all 6 emails LinearSVC got wrong.
 
 All of these are borderline cases, and some may be label noise. The model is close to the ceiling for this dataset.
 
+## Testing on my own inbox
+
+The test set above comes from the same dataset as the training data, so it can't show how the models behave on mail they have never seen anything like. I exported my own Gmail inbox (Google Takeout), converted it to CSV in the same `text` / `spam` format, and ran all three trained models on it with no retraining.
+
+All 107 emails are real mail, so every email a model flags as spam is a false alarm.
+
+| Model | Real emails flagged as spam | Rate |
+|---|---|---|
+| Naive Bayes | 1 of 107 | 0.9% |
+| Logistic Regression | 41 of 107 | 38% |
+| LinearSVC | 66 of 107 | 62% |
+
+What this shows:
+
+- **The best model on the benchmark is the worst on real mail.** LinearSVC made 2 false alarms in 872 real emails on the original test set, but it flags 62% of my inbox.
+- **This is distribution shift.** The training emails look like older corporate mail, so the models appear to have learned "looks like that = ham, anything else = spam". Modern newsletters, receipts and other-language mail don't look like that.
+- **Naive Bayes only looks good here because it is cautious.** It missed more than half the spam on the original test set, so a low false alarm rate says little about it.
+
+Caveats: 107 emails is a small sample, so the exact percentages aren't reliable, but the gap between the benchmark and the real inbox is large. My inbox has no spam in it (I delete it), so this test only measures false alarms, not missed spam.
+
 ## Limitations
 
-- **99% is probably too optimistic.** The emails look like older corporate email (names, topics and writing style suggest a 2000s-era corpus), so the model may partly be learning "sounds like old corporate email" versus everything else.
-- **Not tested on modern mail.** Newsletters, receipts, promotions, other languages and current phishing look different. Expect lower performance on a real inbox (distribution shift).
+- **99% on the benchmark does not carry over to real mail.** See the inbox test above. The dataset's emails appear to be older corporate email (names, topics and dates inside some messages point to the early 2000s).
+- **No modern spam to test or train on yet.** My inbox test covers false alarms only. I need recent spam from the same source as the ham to measure missed spam and to retrain fairly.
 - **Single split.** Results come from one train/test split. Cross-validation would give a more reliable estimate.
 - **Default TF-IDF.** No tuning of n-grams, stop words or other features.
 
 ## Next steps
 
-- Test the saved model on my own inbox (all real mail, so every flag is a false positive) to measure the distribution shift
+- Collect modern spam (leave my Gmail spam folder alone for a few weeks, then export it), label it 1 and my inbox 0, and retrain on data from the same time and source. Then compare against the 62% false alarm rate above
+- Check how many known words each flagged email has, to see whether the models are just guessing on text outside their vocabulary
 - Add cross-validation and decision-threshold tuning
 - Try character n-grams and extra features such as message length and number of links
 - Build a small script that checks Gmail and only labels suspected spam, never deletes

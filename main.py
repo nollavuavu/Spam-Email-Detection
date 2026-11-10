@@ -8,6 +8,7 @@ from sklearn.metrics import classification_report
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
 from sklearn.metrics import confusion_matrix
+import joblib
 
 spam_file_path = "emails.csv"
 df = pd.read_csv(spam_file_path)
@@ -65,3 +66,18 @@ wrong3 = x_test[preds3 != y_test]
 for text, true_label in zip(wrong3, y_test[preds3 != y_test]):
     print(true_label, "|", text[:300])
     print("----")
+
+
+joblib.dump(vec, "vec.pkl")
+joblib.dump(model1, "nb.pkl")
+joblib.dump(model2, "lr.pkl")
+joblib.dump(model3, "svc.pkl")
+
+vec = joblib.load("vec.pkl")
+inbox = pd.read_csv("small_inbox.csv")
+inbox_num = vec.transform(inbox["text"])
+
+for name in ["nb", "lr", "svc"]:
+    model = joblib.load(f"{name}.pkl")
+    preds = model.predict(inbox_num)
+    print(f"{name}: {preds.sum()} of {len(preds)} flagged as spam")
