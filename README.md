@@ -4,7 +4,7 @@ A small machine learning project that classifies emails as spam or ham (not spam
 
 ## Dataset
 
-- - Source: [Spam Email Dataset on Kaggle](https://www.kaggle.com/datasets/jackksoncsie/spam-email-dataset)
+- Source: [Spam Email Dataset on Kaggle](https://www.kaggle.com/datasets/jackksoncsie/spam-email-dataset)
 - 5,728 labeled emails, two columns: the email text and a label (1 = spam, 0 = ham)
 - About 24% spam and 76% ham, so the classes are imbalanced
 - No missing values and no duplicate rows
